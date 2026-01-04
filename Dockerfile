@@ -5,14 +5,14 @@ ENV PYTHONUNBUFFERED=1 \
     PIP_NO_CACHE_DIR=1 \
     PIP_DISABLE_PIP_VERSION_CHECK=1
 
-WORKDIR /app
+WORKDIR /core
 
 # Install Python dependencies
-COPY app/requirements.txt .
+COPY core/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy application code
-COPY app/ .
+COPY core/ .
 
 # Create necessary directories
 RUN mkdir -p staticfiles db
