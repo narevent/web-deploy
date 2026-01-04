@@ -26,7 +26,7 @@ A production-ready Django application template with Docker, Nginx, and automated
 SSH into your VPS and run:
 
 ```bash
-wget https://raw.githubusercontent.com/narevent/web-deploy/main/scripts/init-vps.sh
+wget https://raw.githubusercontent.com/yourusername/yourrepo/main/scripts/init-vps.sh
 chmod +x init-vps.sh
 sudo ./init-vps.sh
 ```
@@ -42,7 +42,7 @@ sudo apt install docker.io docker-compose git -y
 
 ```bash
 cd /opt
-git clone https://github.com/narevent/web-deploy.git app
+git clone https://github.com/yourusername/yourrepo.git app
 cd app
 ```
 
@@ -54,7 +54,7 @@ nano .env
 ```
 
 Update these values:
-- `DOMAIN=vumgames.com`
+- `DOMAIN=yourdomain.com`
 - `EMAIL=your-email@example.com`
 - `SECRET_KEY` will be auto-generated if not set
 
@@ -71,7 +71,7 @@ chmod +x scripts/*.sh
 ./scripts/setup-ssl.sh
 ```
 
-Your site is now live at `https://vumgames.com`! 🎉
+Your site is now live at `https://yourdomain.com`! 🎉
 
 ## Project Structure
 
@@ -193,11 +193,45 @@ Add to crontab:
 
 ## Troubleshooting
 
+### Quick Diagnostics
+
+Run the troubleshooting script:
+```bash
+chmod +x scripts/troubleshoot.sh
+./scripts/troubleshoot.sh
+```
+
+### HTTP redirects to HTTPS but HTTPS doesn't work
+
+This happens when nginx is configured for HTTPS but certificates aren't set up yet.
+
+**Solution:**
+
+1. Stop all services:
+   ```bash
+   docker-compose down
+   ```
+
+2. Redeploy (will create HTTP-only config):
+   ```bash
+   ./scripts/deploy.sh
+   ```
+
+3. Verify HTTP works:
+   ```bash
+   curl http://vumgames.com
+   ```
+
+4. Then setup SSL:
+   ```bash
+   ./scripts/setup-ssl.sh
+   ```
+
 ### SSL Certificate Issues
 
 1. Verify DNS points to your server:
    ```bash
-   nslookup vumgames.com
+   nslookup yourdomain.com
    ```
 
 2. Check ports are open:
@@ -295,4 +329,4 @@ For issues and questions:
 
 ---
 
-**Note**: This template is designed for small to medium projects. For high-traffic applications, consider additional optimizations and monitoring solutions.# web-deploy
+**Note**: This template is designed for small to medium projects. For high-traffic applications, consider additional optimizations and monitoring solutions.

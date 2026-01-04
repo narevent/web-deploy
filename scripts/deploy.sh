@@ -59,41 +59,47 @@ echo "Waiting for Django to be ready..."
 sleep 10
 
 # Check if certificates exist
-if [ ! -d "./volumes/certbot/conf/live/$DOMAIN" ]; then
+CERT_EXISTS=false
+if [ -d "/etc/letsencrypt/live/$DOMAIN" ] || [ -d "./volumes/certbot/conf/live/$DOMAIN" ]; then
+    CERT_EXISTS=true
+fi
+
+if [ "$CERT_EXISTS" = false ]; then
     echo ""
     echo "================================"
     echo "SSL certificates not found."
-    echo "Run ./scripts/setup-ssl.sh to obtain certificates"
+    echo "Creating HTTP-only configuration..."
     echo "================================"
     echo ""
     
-    # Start nginx without SSL for now
-    echo "Starting nginx in HTTP-only mode for certificate generation..."
-    
-    # Create temporary nginx config without SSL
-    cat > nginx/default.conf << 'EOF'
+    # Create HTTP-only nginx config (no redirect to HTTPS)
+    cat > nginx/default.conf << EOF
 upstream django {
     server web:8000;
 }
 
 server {
     listen 80;
-    server_name _;
+    server_name $DOMAIN www.$DOMAIN;
 
     location /.well-known/acme-challenge/ {
         root /var/www/certbot;
     }
 
     location /static/ {
-        alias /app/staticfiles/;
+        alias /core/staticfiles/;
+        expires 30d;
+        add_header Cache-Control "public, immutable";
     }
 
     location / {
         proxy_pass http://django;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header Host \$host;
+        proxy_set_header X-Real-IP \$remote_addr;
+        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto \$scheme;
+        proxy_redirect off;
+        proxy_buffering off;
     }
 }
 EOF
@@ -117,8 +123,10 @@ echo "URL: http://$DOMAIN/admin"
 echo ""
 echo "⚠️  IMPORTANT: Change the admin password immediately!"
 echo ""
-if [ ! -d "./volumes/certbot/conf/live/$DOMAIN" ]; then
+if [ "$CERT_EXISTS" = false ]; then
+    echo "⚠️  Running in HTTP mode (no SSL)"
     echo "To enable HTTPS, run:"
     echo "./scripts/setup-ssl.sh"
+    echo ""
 fi
 echo ""
