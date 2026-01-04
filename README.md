@@ -26,7 +26,7 @@ A production-ready Django application template with Docker, Nginx, and automated
 SSH into your VPS and run:
 
 ```bash
-wget https://raw.githubusercontent.com/yourusername/yourrepo/main/scripts/init-vps.sh
+wget https://raw.githubusercontent.com/narevent/web-deploy/main/scripts/init-vps.sh
 chmod +x init-vps.sh
 sudo ./init-vps.sh
 ```
@@ -42,7 +42,7 @@ sudo apt install docker.io docker-compose git -y
 
 ```bash
 cd /opt
-git clone https://github.com/yourusername/yourrepo.git app
+git clone https://github.com/narevent/web-deploy.git app
 cd app
 ```
 
@@ -54,7 +54,7 @@ nano .env
 ```
 
 Update these values:
-- `DOMAIN=yourdomain.com`
+- `DOMAIN=vumgames.com`
 - `EMAIL=your-email@example.com`
 - `SECRET_KEY` will be auto-generated if not set
 
@@ -71,7 +71,7 @@ chmod +x scripts/*.sh
 ./scripts/setup-ssl.sh
 ```
 
-Your site is now live at `https://yourdomain.com`! 🎉
+Your site is now live at `https://vumgames.com`! 🎉
 
 ## Project Structure
 
@@ -197,7 +197,7 @@ Add to crontab:
 
 1. Verify DNS points to your server:
    ```bash
-   nslookup yourdomain.com
+   nslookup vumgames.com
    ```
 
 2. Check ports are open:
